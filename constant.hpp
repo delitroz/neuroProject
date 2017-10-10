@@ -9,12 +9,12 @@ static const double tau_rp = 200;
 static const double h = 1;
 
 //treshold memrane electrical potential of the neurone [mvolt]
-static const double V_tresh = 20;
+static const double V_tresh = 200;
 //standard memrane electrical potential of the neurone [mvolt]
-static const double V_reset = 10;
+static const double V_reset = 100;
 
 //electrical capacitance [farad]
-static const double C = 1;
+static const double C = 10;
 //electric resistance of the membrane (=tau/C) 
 static const double R = 20; 
 

@@ -64,9 +64,6 @@ class neuron
 		//tells if the neuron is refractory or not
 		bool refractory_;
 		
-		//show since when the neuron is refractory
-		unsigned int refractoryClock_;
-		
 		//global clock of the neuron !in steps h!
 		unsigned int neuroClock_;
 };

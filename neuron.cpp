@@ -9,7 +9,6 @@ neuron::neuron()
 	  :V_(V_reset),
 	   numberOfSpikes_(0),
 	   refractory_(false),
-	   refractoryClock_(0),
 	   neuroClock_(0)
 {
 	spikeTimes_.clear();
@@ -36,15 +35,9 @@ void neuron::update (double h, double t, double Iext)
 	
 	if(refractory_ == true)
 	{
-		if(refractoryClock_ == tau_rp)
+		if (!spikeTimes_.empty() and neuroClock_>= spikeTimes_.back()+tau_rp)
 		{
 			refractory_ = false;
-			refractoryClock_ = 0;
-		}
-		else
-		{
-			++refractoryClock_;
-			//cout << "still refractory during " << (tau_rp - refractoryClock_) << "ms" << endl;
 		}
 	}
 	if(refractory_ == false and V_ < V_tresh)
