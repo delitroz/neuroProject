@@ -49,6 +49,7 @@ int main()
 	else
 	{
 		data << "Membrane potentials at time t: "<< endl << endl;
+		cout << "---potential---" << endl;
 		while(t < t_stop)
 		{
 			if(t >= t_a and t <= t_b)
@@ -61,14 +62,16 @@ int main()
 			}
 			
 			data << "t = " << t/10 << "ms : " << n.getMembranePotential() << " mV" << endl;
-			
+			cout << "t = " << t/10 << "ms : " << n.getMembranePotential() << " mV" << endl;
 			t +=h;
 		}
 		
 		data << "Spikes occurred at times:" << endl;
+		cout << "---spikes---" << endl;
 		for(size_t i = 0; i < n.getSpikeTimes().size(); ++i)
 		{
 			data << "t = " << (n.getSpikeTimes()[i])/10 << "ms" << endl;
+			cout << "t = " << (n.getSpikeTimes()[i])/10 << "ms" << endl;
 		}
 		
 		data.close();

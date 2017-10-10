@@ -7,7 +7,10 @@ using namespace std;
 
 neuron::neuron()
 	  :V_(V_reset),
-	   numberOfSpikes_(0)
+	   numberOfSpikes_(0),
+	   refractory_(false),
+	   refractoryClock_(0),
+	   neuroClock_(0)
 {
 	spikeTimes_.clear();
 }
@@ -28,16 +31,36 @@ vector<double> neuron::getSpikeTimes() const
 }
 
 void neuron::update (double h, double t, double Iext)
-{
-	if(V_ < V_tresh)
+{	
+	//cout << neuroClock_ << endl;
+	
+	if(refractory_ == true)
+	{
+		if(refractoryClock_ == tau_rp)
+		{
+			refractory_ = false;
+			refractoryClock_ = 0;
+		}
+		else
+		{
+			++refractoryClock_;
+			//cout << "still refractory during " << (tau_rp - refractoryClock_) << "ms" << endl;
+		}
+	}
+	if(refractory_ == false and V_ < V_tresh)
 	{
 		depolarisation(h,Iext);
 	}
-	else if(V_ >= V_tresh)
+	else if(refractory_ == false and V_ >= V_tresh)
 	{
 		spikeTimes_.push_back(t);
 		V_ = V_reset;
+		refractory_ = true;
+		
 	}
+	
+	++neuroClock_;
+	
 }
 
 void neuron::depolarisation (double h, double Iext)

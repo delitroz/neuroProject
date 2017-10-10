@@ -52,9 +52,23 @@ class neuron
 		void depolarisation (double h, double Iext);
 	
 	private:
+		//membrane potential
 		double V_;
+		
+		//number of spikes produced by the neuron
 		int numberOfSpikes_;
+		
+		//collection of the times when the spikes occured
 		vector<double> spikeTimes_;
+		
+		//tells if the neuron is refractory or not
+		bool refractory_;
+		
+		//show since when the neuron is refractory
+		unsigned int refractoryClock_;
+		
+		//global clock of the neuron !in steps h!
+		unsigned int neuroClock_;
 };
 
 #endif
