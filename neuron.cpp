@@ -5,58 +5,88 @@
 
 using namespace std;
 
-neuron::neuron()
+Neuron::Neuron()
 	  :V_(V_reset),
-	   numberOfSpikes_(0),
 	   refractory_(false),
-	   neuroClock_(0)
+	   neuroClock_(0),
+	   buffer_(D+1, 0.0) 
 {
 	spikeTimes_.clear();
+	postNeurons_.clear();
 }
 
-double neuron::getMembranePotential() const
+double Neuron::getMembranePotential() const
 {
 	return V_;
 }
 
-int neuron::getNumberOfSpike() const
+size_t Neuron::getNumberOfSpike() const
 {
-	return numberOfSpikes_;
+	return spikeTimes_.size();
 }
 
-vector<double> neuron::getSpikeTimes() const
+vector<double> Neuron::getSpikeTimes() const
 {
 	return spikeTimes_;
 }
 
-void neuron::update (double h, double t, double Iext)
+void Neuron::addConection(Neuron* other)
+{
+	postNeurons_.push_back(other);
+}
+
+void Neuron::getSpike()
 {	
-	//cout << neuroClock_ << endl;
+	int i = getBufferPos(neuroClock_+D);
+	cout << "n1: currently at place " << getBufferPos(neuroClock_) << endl;
+	cout << "n1: spike stocked in place " << i << endl;
+	cout << "n1: J should be add at time " << neuroClock_+D << endl;
 	
-	if(refractory_ == true)
+	buffer_[i] += J;
+}
+
+void Neuron::update (double Iext)
+{		
+	if(refractory_)
 	{
 		if (!spikeTimes_.empty() and neuroClock_>= spikeTimes_.back()+tau_rp)
 		{
 			refractory_ = false;
 		}
 	}
-	if(refractory_ == false and V_ < V_tresh)
+	else if(!refractory_ and V_ < V_tresh)
 	{
-		depolarisation(h,Iext);
+		depolarisation(h,Iext,buffer_[getBufferPos(neuroClock_)]);
 	}
-	else if(refractory_ == false and V_ >= V_tresh)
+	else if(!refractory_ and V_ >= V_tresh)
 	{
-		spikeTimes_.push_back(t);
+		spikeTimes_.push_back(neuroClock_);
+		
+		if(!postNeurons_.empty())
+		{
+			for (size_t i(0); i < postNeurons_.size(); ++i)
+			{
+				cout << "n0: HAVE A SPIKE" << endl;
+				postNeurons_[i]->getSpike();
+			}
+		}
+		
 		V_ = V_reset;
 		refractory_ = true;
-		
+		 
 	}
+	buffer_[getBufferPos(neuroClock_)] = 0.0;
 	
 	++neuroClock_;
-	
 }
 
-void neuron::depolarisation (double h, double Iext)
+void Neuron::depolarisation (double h, double Iext, double J)
 {
-	V_ = exp(-(h/tau)) * V_ + Iext * R * (1-exp(-(h/tau)));  	
+	V_ = (exp(-(h/tau)) * V_) + (Iext * R * (1-exp(-(h/tau)))) + J;  
+}
+
+int Neuron::getBufferPos (int t)
+{
+	int i = t % (D+1);
+	return i;
 }
