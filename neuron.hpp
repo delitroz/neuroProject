@@ -136,7 +136,7 @@ class Neuron
 		bool refractory_;
 		
 		//!global clock of the neuron !in steps h!
-		unsigned int neuroClock_;
+		double neuroClock_;
 		
 		//!buffer: memory of the spikes recieved at a time t by the neuron
 		vector<double> buffer_;

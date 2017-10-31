@@ -65,7 +65,7 @@ static const int g(5);
  *minimal value to have 1 Ce = 13
  *minimal value to have 1 Ci = 50
  */ 
-static const int N(50);
+static const int N(1250);
 
 //!number of excitatory neurons in a network
 static const int Ne = 0.8*N;
@@ -94,7 +94,8 @@ static const int Ci = 0.1*Ni;
 	//                          //
 	//////////////////////////////
 
+static const double V_thr = V_tresh/(Ce*Ji*tau/10);
 //!rate of random spiking from external connections
-static const double V_ext = 0.2;
+static const double V_ext = 2*V_thr;
 
 #endif

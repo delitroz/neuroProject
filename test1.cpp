@@ -16,9 +16,9 @@ int main()
 	
 	Neuron n;
 	
-	n.setMembranePotential(10.0);
+	n.setMembranePotential(0.0);
 	
-	double Iext(0.0);
+	double Iext(1.01);
 		
 	cout << "---potential---" << endl << endl;
 		

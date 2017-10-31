@@ -8,7 +8,7 @@ int main()
 	
 	net.runSimulation(10000);
 	
-	net.printSpikeTimes();
+	net.displaySpikeTimes();
 
 
 	return 0;

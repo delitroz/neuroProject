@@ -87,11 +87,11 @@ TEST (NeuronTest, Spike)
 		n.update(Iext, false);
 	}
 	EXPECT_EQ(n.getNumberOfSpike(), 5);
-	EXPECT_EQ(n.getSpikeTimes()[0], 92.4);
-	EXPECT_EQ(n.getSpikeTimes()[1], 186.9);
-	EXPECT_EQ(n.getSpikeTimes()[2], 281.4);
-	EXPECT_EQ(n.getSpikeTimes()[3], 375.9);
-	EXPECT_EQ(n.getSpikeTimes()[4], 470.4);
+	EXPECT_EQ(n.getSpikeTimes()[0]/10, 92.4);
+	EXPECT_EQ(n.getSpikeTimes()[1]/10, 186.9);
+	EXPECT_EQ(n.getSpikeTimes()[2]/10, 281.4);
+	EXPECT_EQ(n.getSpikeTimes()[3]/10, 375.9);
+	EXPECT_EQ(n.getSpikeTimes()[4]/10, 470.4);
 }
 
 	//////////////////////
@@ -102,9 +102,6 @@ TEST (NeuronTest, Spike)
 
 TEST (NetworkTest, TotalConnection)
 {
-	/*!
-	 *test the total number of connection in the network
-	 */
-	
+
 }
 	
