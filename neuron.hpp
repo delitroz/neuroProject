@@ -9,17 +9,31 @@ using namespace std;
 class Neuron
 {
 	public:
+
+	//////////////////////////////
+	//                          //
+	// constructor & destructor //
+	//                          //
+	//////////////////////////////
 	
 	/*!
-	 * @brief initialise a neuron with a null membrane potential
-	 * 		  						   an empty spike historic
-	 * 								   non-repository mode
-	 * 								   a clock at t=0
-	 * 								   no connection
-	 * 								   an empty buffer
+	 * @brief initialise a neuron with a null membrane potential, in a
+	 * 		  non repository state, with an internal clock at t=0, with 
+	 * 		  an empty buffer and in a non spiking state
+	 * 	
 	 */
 		Neuron();
-	 
+		
+	/*!
+	 * @brief destructor
+	 */	
+		~Neuron();
+		
+	//////////////////////////////
+	//                          //
+	//			Getters			//
+	//                          //
+	//////////////////////////////
 
 	/*!
 	 * @brief get the membrane potential of the neuron
@@ -36,38 +50,7 @@ class Neuron
 	 * @brief get all the times a spike occured in the neuron
 	 */
 		vector<double> getSpikeTimes() const;
-		
-	/*!
-	 * @brief update the state of a neuron at each time steps h during a
-	 * 		  simulation
-	 * 
-	 * @param double I the external electric current applied on the neuron
-	 */
-		void update (double Iext);
-		
-	/*!
-	 * @brief compute the embrane potential at time t+h
-	 * 
-	 * @param double h the time step
-	 * 		  double I the external electric current applied on the neuron
-	 */ 
-		void depolarisation (double h, double Iext, double J);
-		
-	/*!
-	 * @brief add a new neuron in the collection of post-synaptic neurons
-	 *
-	 * @param neuron to add
-	 */
-		void addConection (Neuron* other);
-		
-	/*!
-	 * @brief add the amplitude of a spike in the spikeMemory
-	 * 
-	 * @param int t time at which the spike occured in the pre-synaptic
-	 * 				neuron
-	 */
-		void getSpike ();
-		
+	
 	/*!
 	 * @brief tells which position of the buffer correspond to a time t
 	 * 
@@ -75,26 +58,92 @@ class Neuron
 	 * 
 	 * @return int i the position corresponding
 	 */	
-		int getBufferPos (int t);
+		int getBufferPos (int t) const;
+		
+	/*!
+	 * @brief get the information whether a neuron is spiking at a time t or not
+	 * 
+	 * @return spike_
+	 */	
+		bool getSpike ();
+		
+	//////////////////////////////
+	//                          //
+	//			Setters			//
+	//                          //
+	//////////////////////////////
+	
+	/*!
+	 * @brief set the membrane potential to given number
+	 * 
+	 * @param double newPot new membrane potential
+	 */
+		void setMembranePotential(double newV);
+	
+	//////////////////////////////
+	//                          //
+	//		  Simulation		//
+	//                          //
+	//////////////////////////////
+		
+	/*!
+	 * @brief update the state of a neuron at each time steps h during a
+	 * 		  simulation
+	 * 
+	 * @param double I the external electric current applied on the neuron
+	 * @param bool randomSpike if the neuron ca reciefe external random spike or not
+	 */
+		void update (double Iext, bool randomSpike);
+		
+	/*!
+	 * @brief compute the embrane potential at time t+h
+	 * 
+	 * @param double h the time step
+	 * @param double I the external electric current applied on the neuron
+	 */ 
+		void depolarisation (double Iext, double J);
+		
+	/*!
+	 * @brief add the electrical imput recieved by the neuron in the buffer
+	 * 
+	 * @param double input 
+	 */
+		void getSpiked (double input);
+
+	//////////////////////////////
+	//                          //
+	//		Random Generator	//
+	//                          //
+	//////////////////////////////
+	
+	/*!
+	 * @brief generate a random spike from external neurons following a
+	 * 		  poisson distribution 
+	 */		
+		int randomExtSpike();
+		
+	
 	
 	private:
-		//membrane potential
+	
+		//!membrane potential
 		double V_;
 		
-		//collection of the times when the spikes occured
+		//!collection of the times when the spikes occured
 		vector<double> spikeTimes_;
 		
-		//tells if the neuron is refractory or not
+		//!tells if the neuron is refractory or not
 		bool refractory_;
 		
-		//global clock of the neuron !in steps h!
+		//!global clock of the neuron !in steps h!
 		unsigned int neuroClock_;
 		
-		//collection of post-synaptic neurons
-		vector<Neuron*> postNeurons_;
-		
-		//buffer: memory of the spikes recieved at a time t by the neuron
+		//!buffer: memory of the spikes recieved at a time t by the neuron
 		vector<double> buffer_;
+		
+		//!tells if the neuron spike at that time t
+		bool spike_;
+		
 };
 
 #endif

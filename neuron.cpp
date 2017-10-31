@@ -2,19 +2,36 @@
 
 #include <iostream>
 #include <cmath>
+#include <random>
 
 using namespace std;
 
-Neuron::Neuron()
+	//////////////////////////////
+	//                          //
+	// constructor & destructor //
+	//                          //
+	//////////////////////////////
+	
+Neuron::Neuron() 
 	  :V_(V_reset),
 	   refractory_(false),
 	   neuroClock_(0),
-	   buffer_(D+1, 0.0) 
+	   buffer_(D+1, 0.0),
+	   spike_(false)
+{}
+
+Neuron::~Neuron()
 {
+	buffer_.clear();
 	spikeTimes_.clear();
-	postNeurons_.clear();
 }
 
+	//////////////////////////////
+	//                          //
+	//			Getters			//
+	//                          //
+	//////////////////////////////
+	
 double Neuron::getMembranePotential() const
 {
 	return V_;
@@ -30,25 +47,40 @@ vector<double> Neuron::getSpikeTimes() const
 	return spikeTimes_;
 }
 
-void Neuron::addConection(Neuron* other)
+int Neuron::getBufferPos (int t) const
 {
-	postNeurons_.push_back(other);
+	int i = t % (D+1);
+	return i;
 }
 
-void Neuron::getSpike()
-{	
-	int i = getBufferPos(neuroClock_+D);
-	cout << "n1: currently at place " << getBufferPos(neuroClock_) << endl;
-	cout << "n1: spike stocked in place " << i << endl;
-	cout << "n1: J should be add at time " << neuroClock_+D << endl;
+bool Neuron::getSpike()
+{
+	return spike_;
+}
+
+	//////////////////////////////
+	//                          //
+	//			Setters			//
+	//                          //
+	//////////////////////////////
 	
-	buffer_[i] += J;
+void Neuron::setMembranePotential(double newV)
+{
+	V_ = newV;
 }
+	
+	//////////////////////////////
+	//                          //
+	//		  Simulation		//
+	//                          //
+	//////////////////////////////
 
-void Neuron::update (double Iext)
+void Neuron::update(double Iext, bool randomSpike) 
 {		
 	if(refractory_)
 	{
+		spike_=false;
+		
 		if (!spikeTimes_.empty() and neuroClock_>= spikeTimes_.back()+tau_rp)
 		{
 			refractory_ = false;
@@ -56,37 +88,64 @@ void Neuron::update (double Iext)
 	}
 	else if(!refractory_ and V_ < V_tresh)
 	{
-		depolarisation(h,Iext,buffer_[getBufferPos(neuroClock_)]);
+		/*!
+		 * we create a variable J that contain the information comming 
+		 * from the buffer plus the random noise created with poisson
+		 * distribution
+		 */
+		double J(0.0);
+		if(randomSpike)
+		{
+			J = randomExtSpike()*Ji + buffer_[getBufferPos(neuroClock_)];
+		}
+		else
+		{
+			J = buffer_[getBufferPos(neuroClock_)];
+		}
+		depolarisation(Iext, J);
 	}
 	else if(!refractory_ and V_ >= V_tresh)
 	{
 		spikeTimes_.push_back(neuroClock_);
 		
-		if(!postNeurons_.empty())
-		{
-			for (size_t i(0); i < postNeurons_.size(); ++i)
-			{
-				cout << "n0: HAVE A SPIKE" << endl;
-				postNeurons_[i]->getSpike();
-			}
-		}
+		spike_ = true;
 		
 		V_ = V_reset;
-		refractory_ = true;
-		 
+		
+		refractory_ = true;	 
 	}
+	
 	buffer_[getBufferPos(neuroClock_)] = 0.0;
 	
 	++neuroClock_;
 }
 
-void Neuron::depolarisation (double h, double Iext, double J)
+void Neuron::depolarisation (double Iext, double J)
 {
-	V_ = (exp(-(h/tau)) * V_) + (Iext * R * (1-exp(-(h/tau)))) + J;  
+	V_ = V_*exp(-h/tau) + Iext*R*(1-exp(-h/tau)) + J; 
 }
 
-int Neuron::getBufferPos (int t)
-{
-	int i = t % (D+1);
-	return i;
+void Neuron::getSpiked(double input)
+{	
+	int i = getBufferPos(neuroClock_+D);
+
+	buffer_[i] += input;
 }
+
+	//////////////////////////////
+	//                          //
+	//		Random Generator	//
+	//                          //
+	//////////////////////////////
+	
+int Neuron::randomExtSpike()
+{
+	double lambda = V_ext*Ce;
+	
+	static random_device rd;
+	static mt19937 gen(rd());
+	static poisson_distribution<> d(lambda);
+	
+	return d(gen);
+}
+

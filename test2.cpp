@@ -1,7 +1,7 @@
 /*!
  * test2
  * @brief test the good functioning of a simple network constituted of
- * 		  two neurons n0 and n1, in which b is n0 is a pre-synaptic neuron
+ * 		  two neurons n0 and n1, in which n0 is a pre-synaptic neuron
  * 		  of n1 and recieve an external current given by the user. When
  * 		  n0 spikes, it transmit a current of amplitude J to n1
  */
@@ -15,11 +15,10 @@ using namespace std;
 
 int main()
 {
-	Neuron n0,
-		   n1;	
+	Neuron n0(0),
+		   n1(1);	
 	
 	Neuron* p_n1 = &n1;
-	
 	n0.addConection(p_n1);
 		   
 	double Iext(0.0), 
@@ -34,11 +33,10 @@ int main()
 	}while(Iext <= 0.0);
 	
 	
-	//cout << "---n1 potential---" << endl;
+	cout << "---n1 potential---" << endl << endl;
 	while(t < t_stop)
 	{
 		n0.update(Iext);
-		//cout << "t = " << t/10 << "ms : " << n0.getMembranePotential() << " mV" << endl;
 		
 		n1.update(0.0);
 		cout << "t = " << t/10 << "ms : " << n1.getMembranePotential() << " mV" << endl;
@@ -46,7 +44,7 @@ int main()
 		++t;
 	}
 	
-	cout << endl << "---spikes---" << endl;
+	cout << endl << endl << "---spikes---" << endl << endl;
 	
 	cout << "---n0---" << endl << n0.getNumberOfSpike() << " spikes occured at times: " << endl;
 	for(size_t i = 0; i < n0.getSpikeTimes().size(); ++i)
