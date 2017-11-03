@@ -1,8 +1,9 @@
 #ifndef neuron_HPP
 #define neuron_HPP
 
-#include <vector>
 #include "constant.hpp"
+
+#include <vector>
 
 using namespace std;
 
@@ -17,12 +18,15 @@ class Neuron
 	//////////////////////////////
 	
 	/*!
-	 * @brief initialise a neuron with a null membrane potential, in a
+	 * @brief default constructor
+	 * 		  initialise a neuron with a null membrane potential, in a
 	 * 		  non repository state, with an internal clock at t=0, with 
 	 * 		  an empty buffer and in a non spiking state
+	 * 
+	 * @param neuron_type type the type of the neuron
 	 * 	
 	 */
-		Neuron();
+		Neuron(neuron_type type);
 		
 	/*!
 	 * @brief destructor
@@ -61,11 +65,9 @@ class Neuron
 		int getBufferPos (int t) const;
 		
 	/*!
-	 * @brief get the information whether a neuron is spiking at a time t or not
-	 * 
-	 * @return spike_
+	 * @brief tells wheter the neuron is excitatory or not (inhibitory)
 	 */	
-		bool getSpike ();
+		bool isExcitatory();
 		
 	//////////////////////////////
 	//                          //
@@ -93,7 +95,7 @@ class Neuron
 	 * @param double I the external electric current applied on the neuron
 	 * @param bool randomSpike if the neuron ca reciefe external random spike or not
 	 */
-		void update (double Iext, bool randomSpike);
+		bool update (double Iext, bool randomSpike);
 		
 	/*!
 	 * @brief compute the embrane potential at time t+h
@@ -140,9 +142,9 @@ class Neuron
 		
 		//!buffer: memory of the spikes recieved at a time t by the neuron
 		vector<double> buffer_;
-		
-		//!tells if the neuron spike at that time t
-		bool spike_;
+
+		//!tells which type the neuron is (E:exitatory, I:inhibitory)
+		neuron_type type_;
 		
 };
 

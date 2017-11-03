@@ -113,11 +113,9 @@ class Network
 		//!list of all the neurons in the network
 		vector <Neuron> neurons_;
 		
-		//!matrix that store the weigth of each connection for each
-		//!in the form of whole numbers
-		//!lines : neurons
-		//!column : connections
-		//!Xi,j = connection weight between the post-synaptic neuron Ni and the pre-synaptic neuron Nj
+		//!matrix that map the connections for each neurons
+		//!lines : neuron
+		//!column : post-synaptic neurons 
 		vector< vector<int> > connectionMap_;
 		
 		//!local clock of the network

@@ -12,12 +12,12 @@ using namespace std;
 	//                          //
 	//////////////////////////////
 	
-Neuron::Neuron() 
+Neuron::Neuron(neuron_type type) 
 	  :V_(V_reset),
 	   refractory_(false),
 	   neuroClock_(0),
 	   buffer_(D+1, 0.0),
-	   spike_(false)
+	   type_(type)
 {}
 
 Neuron::~Neuron()
@@ -53,9 +53,16 @@ int Neuron::getBufferPos (int t) const
 	return i;
 }
 
-bool Neuron::getSpike()
+bool Neuron::isExcitatory()
 {
-	return spike_;
+	if(type_ == E)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 	//////////////////////////////
@@ -75,12 +82,10 @@ void Neuron::setMembranePotential(double newV)
 	//                          //
 	//////////////////////////////
 
-void Neuron::update(double Iext, bool randomSpike) 
+bool Neuron::update(double Iext, bool randomSpike) 
 {		
 	if(refractory_)
 	{
-		spike_=false;
-		
 		if (!spikeTimes_.empty() and neuroClock_>= spikeTimes_.back()+tau_rp)
 		{
 			refractory_ = false;
@@ -107,17 +112,19 @@ void Neuron::update(double Iext, bool randomSpike)
 	else if(!refractory_ and V_ >= V_tresh)
 	{
 		spikeTimes_.push_back(neuroClock_);
-		
-		spike_ = true;
-		
+	
 		V_ = V_reset;
 		
 		refractory_ = true;	 
+		
+		return true;
 	}
 	
 	buffer_[getBufferPos(neuroClock_)] = 0.0;
 	
 	++neuroClock_;
+	
+	return false;
 }
 
 void Neuron::depolarisation (double Iext, double J)

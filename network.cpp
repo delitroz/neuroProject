@@ -13,19 +13,22 @@ using namespace std;
 	//////////////////////////////
 	
 Network::Network()
-		:neurons_(N), //! by default ou network consist in a number N of neurons stocked in constant.hpp
+		:neurons_(), //! by default ou network consist in a number N of neurons stocked in constant.hpp
 		 connectionMap_(N, vector<int>()), //!contain N lines which are empty vectors
 		 netClock_(0)
 {	
-	for(int i(0); i<N ; ++i)
+	for(int i(0); i<Ne ; ++i)//!adding the exitatory neuron
 	{
-		Neuron n;
-		neurons_[i] = n;
+		neurons_.push_back(Neuron(E));
 	}
-    //DONE ! commenter comme il faut
+	for(int i(0); i<Ni; ++i)
+	{
+		neurons_.push_back(Neuron(I));//!adding the inhibitory neurons
+	}
+ 
     
     
-    for (int i(0); i<N; ++i)
+    for (size_t i(0); i<neurons_.size(); ++i)
     {
 		//!selection of the exitatory connection
 		for (int E(0); E < Ce; ++E) 
@@ -174,30 +177,24 @@ void Network::runSimulation(unsigned int t_stop)
 
 void Network::update()
 {
-	for(int E(0); E<Ne; ++E)
-	{	
-		if(neurons_[E].getSpike())
-		{
-			for (size_t i(0); i<connectionMap_[E].size(); ++i)
-			{
-				neurons_[connectionMap_[E][i]].getSpiked(Je);
-			}
-		}
-	}
-	for(int I(Ne); I<N; ++I)
-	{	
-		if(neurons_[I].getSpike())
-		{
-			for (size_t j(0); j<connectionMap_[I].size(); ++j)
-			{
-				neurons_[connectionMap_[I][j]].getSpiked(-Ji);
-			}
-		}
-	}
-	
-	for (int i(0); i<N; ++i)
+	for (size_t i(0); i<neurons_.size(); ++i)
 	{
-		neurons_[i].update(0.0, true);
+		if(neurons_[i].update(0.0, true))
+		{
+			for(size_t j(0); j<connectionMap_[i].size(); ++j)
+			{
+				int post =connectionMap_[i][j]; 
+				
+				if(neurons_[i].isExcitatory())
+				{
+					neurons_[post].getSpiked(Je);
+				}
+				else
+				{
+					neurons_[post].getSpiked(-Ji);
+				}
+			}
+		}
 	}
 }
 

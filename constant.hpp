@@ -65,7 +65,7 @@ static const int g(5);
  *minimal value to have 1 Ce = 13
  *minimal value to have 1 Ci = 50
  */ 
-static const int N(1250);
+static const int N(0);
 
 //!number of excitatory neurons in a network
 static const int Ne = 0.8*N;
@@ -94,8 +94,17 @@ static const int Ci = 0.1*Ni;
 	//                          //
 	//////////////////////////////
 
-static const double V_thr = V_tresh/(Ce*Ji*tau/10);
+//static const double Nu_tresh = V_tresh/(Je*tau);
 //!rate of random spiking from external connections
-static const double V_ext = 2*V_thr;
+static const double V_ext = 0.2;
+
+	//////////////////////////////
+	//                          //
+	//		Neuron types		//
+	//                          //
+	//////////////////////////////
+	
+//!tells which type the neuron is (E:exitatory I:inhibitory)
+enum neuron_type{E,I};
 
 #endif
