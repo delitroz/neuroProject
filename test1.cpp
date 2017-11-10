@@ -14,7 +14,7 @@ using namespace std;
 int main()
 {
 	
-	Neuron n;
+	Neuron n(E);
 	
 	n.setMembranePotential(0.0);
 	
